@@ -3,7 +3,7 @@
 
         <!-- Brand -->
         <a class="navbar-brand waves-effect" href="/">
-            <strong class="blue-text">DJe-commerce</strong>
+            <strong class="blue-text">Galant</strong>
         </a>
 
         <!-- Collapse -->
@@ -17,7 +17,7 @@
 
             <!-- Left -->
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
+                <!-- <li class="nav-item active">
                     <a class="nav-link waves-effect" href="/">Home
                         <span class="sr-only">(current)</span>
                     </a>
@@ -25,15 +25,12 @@
                 <li class="nav-item">
                     <a class="nav-link waves-effect" href="/checkout">
                         Checkout</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link waves-effect" href="/products">
-                        Products</a>
-                </li>
+                </li> -->
             </ul>
 
             <!-- Right -->
             <ul class="navbar-nav nav-flex-icons">
+                {% if request.user.is_authentificated %}
                 <li class="nav-item">
                     <a class="nav-link waves-effect">
                         <span class="badge red z-depth-1 mr-1"> 1 </span>
@@ -41,6 +38,13 @@
                         <span class="clearfix d-none d-sm-inline-block"> Cart </span>
                     </a>
                 </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link waves-effect">
+                        <span class="clearfix d-none d-sm-inline-block"> Login </span>
+                    </a>
+                </li>
+                {% endif %}
             </ul>
         </div>
 
