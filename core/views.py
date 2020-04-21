@@ -1,12 +1,13 @@
 from django.shortcuts import get_list_or_404, get_object_or_404, redirect, render
 from django.views.generic import ListView, DetailView, View
-from .models import Item
+from .models import Item, BillingAddress
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from core.models import Order, OrderItem
 from django.contrib import messages
 from django.utils import timezone
+from .forms import CheckoutForm
 
 
 def item_list(request):
@@ -23,8 +24,52 @@ def products(request):
     return render(request, "product.html", context)
 
 
-def checkout(request):
-    return render(request, "checkout.html")
+class CheckoutView(View):
+
+    def get(self, *arg, **kwargs):
+        form = CheckoutForm()
+        context = {
+            'form': form
+        }
+        return render(self.request, "checkout.html", context)
+
+    def post(self, *arg, **kwargs):
+        form = CheckoutForm(self.request.POST or None)
+
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            if form.is_valid():
+                first_name = form.cleaned_data('first_name')
+                last_name = form.cleaned_data('last_name')
+                email = form.cleaned_data('email')
+                phone = form.cleaned_data('phone')
+                adress = form.cleaned_data('adress')
+                city = form.cleaned_data('city')
+                county = form.cleaned_data('county')
+                # TODO: add functionality for those
+                # same_shipping_address = form.cleaned_data(
+                #     'same_shipping_address')
+                # save_info = form.cleaned_data('save_info')
+                payment_option = form.cleaned_data('payment_option')
+                billing_address = BillingAddress(
+                    user=self.request.user,
+                    adress=adress,
+                    city=city,
+                    county=county,
+                )
+                billing_address.save()
+                order.billing_address = billing_address
+                order.save()
+                # TODO: add redirect ti the selected payment option
+                return redirect('core:checkout')
+            else:
+                print('Form is not valid')
+            messages.warning(self.request, "Failed checkout")
+            return redirect('core:checkout')
+
+        except ObjectDoesNotExist:
+            messages.error(self.request, "You do not have an active order!")
+            return redirect('core:order-summary')
 
 
 class HomeView(ListView):
@@ -97,7 +142,9 @@ def remove_from_cart(request, slug):
                 user=request.user,
                 ordered=False
             )[0]
+            order_item.quantity = 1
             order.items.remove(order_item)
+            order_item.save()
             messages.info(request, "This item was removed from your cart.")
             return redirect("core:order-summary")
         else:
