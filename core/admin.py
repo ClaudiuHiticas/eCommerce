@@ -1,6 +1,12 @@
 from django.contrib import admin
-from .models import Item, Order, OrderItem
+from .models import Item, Order, OrderItem, Payment
+
+
+# class OrderAdmin(admin.ModelAdmin):
+#     list_display = ['user', 'ordered']
+
 
 admin.site.register(Item)
 admin.site.register(OrderItem)
 admin.site.register(Order)
+admin.site.register(Payment)

@@ -112,13 +112,13 @@
       <div class="row wow fadeIn">
 
         {% for item in object_list %}
-        <div class="col-lg-3 col-md-6 mb-4">
+        <div class="col-lg-3 col-md-6 mb-4 h=100px">
 
           <div class="card">
 
             <div class="view overlay">
-              <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12.jpg" class="card-img-top"
-                alt="">
+              <!-- <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12.jpg" class="card-img-top" -->
+              <img src="{{ item.image.url }}" class="card-img-top">
               <a href="{{ item.get_absolute_url }}">
                 <div class="mask rgba-white-slight"></div>
               </a>
@@ -139,7 +139,7 @@
               <h4 class="font-weight-bold blue-text">
                 <strong>$
                   {% if item.discount_price %}
-                  {{ item.discount_price }}
+                  <del>{{ item.price }}</del> {{ item.discount_price }}
                   {% else %}
                   {{ item.price }}
                   {% endif %}
