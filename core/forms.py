@@ -2,31 +2,38 @@ from django import forms
 
 PAYMENT_CHOICES = (
     ('S', 'Stripe'),
-    ('P', 'Paypal')
+    ('R', 'Ramburs')
 )
 
 
 class CheckoutForm(forms.Form):
     first_name = forms.CharField(widget=forms.TextInput(attrs={
-        'placeholder': 'Nume'
+        'placeholder': 'Nume',
+        'id': 'first_name'
     }))
     last_name = forms.CharField(widget=forms.TextInput(attrs={
-        'placeholder': 'Prenume'
+        'placeholder': 'Prenume',
+        'id': 'last_name'
     }))
     email = forms.EmailField(widget=forms.TextInput(attrs={
-        'placeholder': 'Email'
+        'placeholder': 'Email',
+        'id': 'email'
     }))
     phone = forms.CharField(widget=forms.TextInput(attrs={
-        'placeholder': 'Numar telefon'
+        'placeholder': 'Numar telefon',
+        'id': 'phone'
     }))
-    adress = forms.CharField(widget=forms.TextInput(attrs={
-        'placeholder': 'Adresa'
+    address = forms.CharField(widget=forms.TextInput(attrs={
+        'placeholder': 'Adresa',
+        'id': 'address'
     }))
     city = forms.CharField(widget=forms.TextInput(attrs={
-        'placeholder': 'Oras'
+        'placeholder': 'Oras',
+        'id': 'city'
     }))
     county = forms.CharField(widget=forms.TextInput(attrs={
-        'placeholder': 'Judet'
+        'placeholder': 'Judet',
+        'id': 'county'
     }))
     same_shipping_address = forms.BooleanField(required=False)
     save_info = forms.BooleanField(required=False)

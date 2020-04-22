@@ -95,7 +95,7 @@ class Order(models.Model):
 class BillingAddress(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
-    adress = models.CharField(max_length=100)
+    address = models.CharField(max_length=100)
     city = models.CharField(max_length=30)
     county = models.CharField(max_length=30)
 

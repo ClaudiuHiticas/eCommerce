@@ -114,11 +114,11 @@
         {% for item in object_list %}
         <div class="col-lg-3 col-md-6 mb-4 h=100px">
 
-          <div class="card">
+          <div class="card" style="height: 420px;">
 
             <div class="view overlay">
-              <!-- <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12.jpg" class="card-img-top" -->
-              <img src="{{ item.image.url }}" class="card-img-top">
+              <img src="{{ item.image.url }}" class="card-img-top"
+                style="display: block; margin-top: auto; margin-bottom: auto;">
               <a href="{{ item.get_absolute_url }}">
                 <div class="mask rgba-white-slight"></div>
               </a>
