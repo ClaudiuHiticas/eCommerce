@@ -1,5 +1,6 @@
 from django import forms
 
+
 PAYMENT_CHOICES = (
     ('S', 'Stripe'),
     ('R', 'Ramburs')

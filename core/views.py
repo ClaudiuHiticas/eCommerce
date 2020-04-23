@@ -41,23 +41,6 @@ class CheckoutView(View):
                 'form': form,
                 'order': order
             }
-            # shipping_address_qs = Address.objects.filter(
-            #     user=self.request.user,
-            #     address_type='S',
-            #     default=True
-            # )
-            # if shipping_address_qs.exists():
-            #     context.update(
-            #         {'default_shipping_address': shipping_address_qs[0]})
-
-            # billing_address_qs = Address.objects.filter(
-            #     user=self.request.user,
-            #     address_type='B',
-            #     default=True
-            # )
-            # if billing_address_qs.exists():
-            #     context.update(
-            #         {'default_billing_address': billing_address_qs[0]})
             return render(self.request, "checkout.html", context)
         except ObjectDoesNotExist:
             messages.info(self.request, "You do not have an active order")
@@ -77,8 +60,6 @@ class CheckoutView(View):
                 county = form.cleaned_data['county']
                 city = form.cleaned_data['city']
                 # TODO: add functionality for these fields
-                # same_shipping_address = form.cleaned_data.get(
-                #     'same_shipping_address')
                 # save_info = form.cleaned_data.get('save_info')
                 payment_option = form.cleaned_data.get('payment_option')
                 billing_address = BillingAddress(
@@ -90,7 +71,13 @@ class CheckoutView(View):
                 billing_address.save()
                 order.billing_address = billing_address
                 order.save()
-
+                print(first_name,
+                        last_name,
+                        email,
+                        phone,
+                        address,
+                        county,
+                        city)
                 if payment_option == 'S':
                     return redirect('core:payment', payment_option='stripe')
                 elif payment_option == 'R':

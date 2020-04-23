@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-grey lighten-3
 {% load crispy_forms_tags %}
+grey lighten-3
 
 {% block content %}
 
@@ -12,56 +12,52 @@ grey lighten-3
         <div class="card">
           <form method='POST' class="card-body">
             {% csrf_token %}
-            <!-- {{ crispy }} -->
-            <!--Grid row-->
+            {{ crispy }}
+
+            <!-- <div class="form-row">
+              <div class="col-md-6">
+                <div class="md-form form-group">
+                  <input type="email" class="form-control" id="email" placeholder="Email">
+                  <label for="email"></label>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="md-form form-group">
+                  <input type="text" class="form-control" id="phone" placeholder="Numar de telefon">
+                  <label for="phone"></label>
+                </div>
+              </div>
+            </div> -->
+
+
+
             <div class="row">
-
-              <!--Grid column-->
-              <div class="col-md-6 mb-2">
-
-                <!--firstName-->
-                <div class="md-form mb-5 ">
-                  <!-- <input type="text" id="firstName" class="form-control"> -->
+              <div class="col-md-6">
+                <div class="md-form">
                   {{form.first_name}}
-                  <!-- <label for="firstName" class="">First name</label> -->
+                  <label for="firstName" class=""></label>
                 </div>
-
               </div>
-              <!--Grid column-->
 
-              <!--Grid column-->
-              <div class="col-md-6 mb-2">
-
-                <!--lastName-->
-                <div class="md-form mb-5">
-                  <!-- <input type="text" id="lastName" class="form-control"> -->
+              <div class="col-md-6 mb-2 w-50">
+                <div class="md-form w-50">
                   {{form.last_name}}
-                  <!-- <label for="lastName" class="">Last name</label> -->
+                  <label for="lastName" class=""></label>
                 </div>
-
               </div>
-              <!--Grid column-->
 
             </div>
-            <!--Grid row-->
 
-            <!--Grid row-->
             <div class="row">
-
-              <!--Grid column-->
               <div class="col-md-6 mb-2">
-
-                <!--firstName-->
                 <div class="md-form ">
                   <!-- <input type="text" id="firstName" class="form-control"> -->
                   {{form.email}}
                   <!-- <label for="firstName" class="">First name</label> -->
                 </div>
-
               </div>
-              <!--Grid column-->
 
-              <!--Grid column-->
               <div class="col-md-6 mb-2">
 
                 <!--lastName-->
@@ -116,13 +112,6 @@ grey lighten-3
             </div>
 
             <hr>
-
-            <div class="custom-control custom-checkbox">
-              <input {% if form.same_shipping_address.value %}checked{% endif %} type="checkbox"
-                class="custom-control-input" name="same_billing_address" id="same-address">
-              <label class="custom-control-label" for="same-address">Shipping address is the same as my billing
-                address</label>
-            </div>
             <div class="custom-control custom-checkbox">
               <input {% if form.save_info.value %}checked{% endif %} type="checkbox" class="custom-control-input"
                 name="save_info" id="save-info">
