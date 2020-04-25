@@ -179,7 +179,7 @@ class PaymentView(View):
         except Exception as e:
             # send an email to ourselves
             messages.warning(
-                self.request, "A serious error occurred. We have been notifed.")
+                self.request, "A serious error occurred. We have been notified.")
             return redirect("/")
 
 
@@ -189,7 +189,7 @@ class HomeView(ListView):
     template_name = "home.html"
 
 
-class OrderSummatyView(LoginRequiredMixin, View):
+class OrderSummaryView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
