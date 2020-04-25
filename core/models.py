@@ -1,19 +1,18 @@
-from django.db import models
 from django.conf import settings
+from django.db import models
 from django.shortcuts import reverse
-
 
 CATEGORY_CHOICES = (
     ('S', 'Shirt'),
     ('SW', "Sport wear"),
     ('OW', 'Outwear')
-)
+    )
 
 LABEL_CHOICES = (
     ('P', 'primary'),
     ('S', "secondary"),
     ('D', 'danger')
-)
+    )
 
 
 class Item(models.Model):
@@ -32,17 +31,17 @@ class Item(models.Model):
     def get_absolute_url(self):
         return reverse("core:product", kwargs={
             'slug': self.slug
-        })
+            })
 
     def get_add_to_cart_url(self):
         return reverse("core:add-to-cart", kwargs={
             'slug': self.slug
-        })
+            })
 
     def get_remove_from_cart_url(self):
         return reverse("core:remove-from-cart", kwargs={
             'slug': self.slug
-        })
+            })
 
 
 class OrderItem(models.Model):
@@ -78,9 +77,9 @@ class Order(models.Model):
     ordered_date = models.DateTimeField()
     ordered = models.BooleanField(default=False)
     billing_address = models.ForeignKey(
-        'BillingAddress', on_delete=models.SET_NULL, blank=True, null=True)
+            'BillingAddress', on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey(
-        'Payment', on_delete=models.SET_NULL, blank=True, null=True)
+            'Payment', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return self.user.username

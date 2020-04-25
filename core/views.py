@@ -1,33 +1,31 @@
-from django.shortcuts import get_list_or_404, get_object_or_404, redirect, render
-from django.views.generic import ListView, DetailView, View
-from .models import Item, BillingAddress, Payment
+import stripe
+from decouple import config
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from core.models import Order, OrderItem
-from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
-from .forms import CheckoutForm
-from django.conf import settings
-from django.shortcuts import redirect
-from decouple import config
-from django.core.validators import validate_email
+from django.views.generic import DetailView, ListView, View
 
-import stripe
+from core.models import Order, OrderItem
+from .forms import CheckoutForm
+from .models import BillingAddress, Item, Payment
+
 stripe.api_key = config('STRIPE_SECRET_KEY')
 
 
 def item_list(request):
     context = {
         "items": Item.objects.all()
-    }
+        }
     return render(request, "home.html", context)
 
 
 def products(request):
     context = {
         "items": Item.objects.all()
-    }
+        }
     return render(request, "product.html", context)
 
 
@@ -40,7 +38,7 @@ class CheckoutView(View):
             context = {
                 'form': form,
                 'order': order
-            }
+                }
             return render(self.request, "checkout.html", context)
         except ObjectDoesNotExist:
             messages.info(self.request, "You do not have an active order")
@@ -63,32 +61,32 @@ class CheckoutView(View):
                 # save_info = form.cleaned_data.get('save_info')
                 payment_option = form.cleaned_data.get('payment_option')
                 billing_address = BillingAddress(
-                    user=self.request.user,
-                    address=address,
-                    city=city,
-                    county=county,
-                )
+                        user=self.request.user,
+                        address=address,
+                        city=city,
+                        county=county,
+                        )
                 billing_address.save()
                 order.billing_address = billing_address
                 order.save()
                 print(first_name,
-                        last_name,
-                        email,
-                        phone,
-                        address,
-                        county,
-                        city)
+                      last_name,
+                      email,
+                      phone,
+                      address,
+                      county,
+                      city)
                 if payment_option == 'S':
                     return redirect('core:payment', payment_option='stripe')
                 elif payment_option == 'R':
                     return redirect('core:payment', payment_option='ramburs')
                 else:
                     messages.warning(
-                        self.request, "Invalid payment option selected")
+                            self.request, "Invalid payment option selected")
                     return redirect('core:checkout')
             else:
                 messages.warning(
-                    self.request, "Invalid form")
+                        self.request, "Invalid form")
                 return redirect('core:checkout')
         except ObjectDoesNotExist:
             messages.warning(self.request, "You do not have an active order")
@@ -101,11 +99,11 @@ class PaymentView(View):
         if order.billing_address:
             context = {
                 'order': order
-            }
+                }
             return render(self.request, "payment.html", context)
         else:
             messages.warning(
-                self.request, "You have not added a billing address")
+                    self.request, "You have not added a billing address")
             return redirect("core:checkout")
 
     def post(self, *args, **kwargs):
@@ -115,11 +113,11 @@ class PaymentView(View):
 
         try:
             charge = stripe.Charge.create(
-                amount=amount,  # cents
-                currency="ron",
-                source='tok_ro'
-                # source=token
-            )
+                    amount=amount,  # cents
+                    currency="ron",
+                    source='tok_ro'
+                    # source=token
+                    )
 
             # create the payment
             payment = Payment()
@@ -143,43 +141,43 @@ class PaymentView(View):
             return redirect("/")
 
         except stripe.error.CardError as err:
-            body = e.json_body
+            body = err.json_body
             err = body.get('error', {})
             messages.warning(self.request, f"{err.get('message')}")
             return redirect("/")
 
-        except stripe.error.RateLimitError as e:
+        except stripe.error.RateLimitError as err:
             # Too many requests made to the API too quickly
             messages.warning(self.request, "Rate limit error")
             return redirect("/")
 
-        except stripe.error.InvalidRequestError as e:
+        except stripe.error.InvalidRequestError as err:
             # Invalid parameters were supplied to Stripe's API
             messages.warning(self.request, "Invalid parameters")
             return redirect("/")
 
-        except stripe.error.AuthenticationError as e:
+        except stripe.error.AuthenticationError as err:
             # Authentication with Stripe's API failed
             # (maybe you changed API keys recently)
             messages.warning(self.request, "Not authenticated")
             return redirect("/")
 
-        except stripe.error.APIConnectionError as e:
+        except stripe.error.APIConnectionError as err:
             # Network communication with Stripe failed
             messages.warning(self.request, "Network error")
             return redirect("/")
 
-        except stripe.error.StripeError as e:
+        except stripe.error.StripeError as err:
             # Display a very generic error to the user, and maybe send
             # yourself an email
             messages.warning(
-                self.request, "Something went wrong. You were not charged. Please try again.")
+                    self.request, "Something went wrong. You were not charged. Please try again.")
             return redirect("/")
 
-        except Exception as e:
+        except Exception as err:
             # send an email to ourselves
             messages.warning(
-                self.request, "A serious error occurred. We have been notified.")
+                    self.request, "A serious error occurred. We have been notified.")
             return redirect("/")
 
 
@@ -195,7 +193,7 @@ class OrderSummaryView(LoginRequiredMixin, View):
             order = Order.objects.get(user=self.request.user, ordered=False)
             context = {
                 'object': order
-            }
+                }
             return render(self.request, 'order_summary.html', context)
         except ObjectDoesNotExist:
             messages.warning(self.request, "You do not have an active order!")
@@ -211,10 +209,10 @@ class ItemDetailView(DetailView):
 def add_to_cart(request, slug):
     item = get_object_or_404(Item, slug=slug)
     order_item, created = OrderItem.objects.get_or_create(
-        item=item,
-        user=request.user,
-        ordered=False
-    )
+            item=item,
+            user=request.user,
+            ordered=False
+            )
     order_qs = Order.objects.filter(user=request.user, ordered=False)
     if order_qs.exists():
         order = order_qs[0]
@@ -231,7 +229,7 @@ def add_to_cart(request, slug):
     else:
         ordered_date = timezone.now()
         order = Order.objects.create(
-            user=request.user, ordered_date=ordered_date)
+                user=request.user, ordered_date=ordered_date)
         order.items.add(order_item)
         messages.info(request, "This item was added to your cart.")
         return redirect("core:order-summary")
@@ -241,18 +239,18 @@ def add_to_cart(request, slug):
 def remove_from_cart(request, slug):
     item = get_object_or_404(Item, slug=slug)
     order_qs = Order.objects.filter(
-        user=request.user,
-        ordered=False
-    )
+            user=request.user,
+            ordered=False
+            )
     if order_qs.exists():
         order = order_qs[0]
         # check if the order item is in the order
         if order.items.filter(item__slug=item.slug).exists():
             order_item = OrderItem.objects.filter(
-                item=item,
-                user=request.user,
-                ordered=False
-            )[0]
+                    item=item,
+                    user=request.user,
+                    ordered=False
+                    )[0]
             order_item.quantity = 1
             order.items.remove(order_item)
             order_item.save()
@@ -270,18 +268,18 @@ def remove_from_cart(request, slug):
 def remove_single_item_from_cart(request, slug):
     item = get_object_or_404(Item, slug=slug)
     order_qs = Order.objects.filter(
-        user=request.user,
-        ordered=False
-    )
+            user=request.user,
+            ordered=False
+            )
     if order_qs.exists():
         order = order_qs[0]
         # check if the order item is in the order
         if order.items.filter(item__slug=item.slug).exists():
             order_item = OrderItem.objects.filter(
-                item=item,
-                user=request.user,
-                ordered=False
-            )[0]
+                    item=item,
+                    user=request.user,
+                    ordered=False
+                    )[0]
             if order_item.quantity > 1:
                 order_item.quantity -= 1
             else:
