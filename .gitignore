@@ -12,3 +12,5 @@ media
 /.env
 /.vscode
 media_root
+.idea/
+venv/
